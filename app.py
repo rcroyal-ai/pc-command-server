@@ -12,8 +12,7 @@ def home():
 
 @app.route("/run", methods=["POST"])
 def run_command():
-    auth = request.headers.get("Authorization")
-    if not auth or auth != f"Bearer {API_KEY}":
+    if request.headers.get("X-API-KEY") != API_KEY:
         return jsonify({"error": "Unauthorized"}), 401
 
     data = request.json
