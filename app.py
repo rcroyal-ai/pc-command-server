@@ -1,7 +1,10 @@
 from flask import Flask, request, jsonify
 import subprocess
+import os
 
 app = Flask(__name__)
+
+API_KEY = os.environ.get("API_KEY", "changeme123")
 
 @app.route("/")
 def home():
@@ -9,6 +12,9 @@ def home():
 
 @app.route("/run", methods=["POST"])
 def run_command():
+    if request.headers.get("X-API-KEY") != API_KEY:
+        return jsonify({"error": "Unauthorized"}), 401
+
     data = request.json
     cmd = data.get("cmd")
 
