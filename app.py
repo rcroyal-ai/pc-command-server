@@ -1,6 +1,6 @@
+import os
 from flask import Flask, request, jsonify
 import subprocess
-import os
 
 app = Flask(__name__)
 
@@ -22,12 +22,13 @@ def run_command():
         return jsonify({"error": "No command"}), 400
 
     try:
-        result = subprocess.check_output(
-            cmd, shell=True, stderr=subprocess.STDOUT, timeout=5
-        )
-        return jsonify({"output": result.decode()})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        result = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT, text=True)
+        return jsonify({"output": result})
+    except subprocess.CalledProcessError as e:
+        return jsonify({"error": e.output}), 500
 
+
+# 🔴 BẮT BUỘC PHẢI CÓ
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
